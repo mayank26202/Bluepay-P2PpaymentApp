@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: '#3c5470',
   },
   header: {
     fontSize: 28,

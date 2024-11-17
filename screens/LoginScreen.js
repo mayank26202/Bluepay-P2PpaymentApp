@@ -8,10 +8,10 @@ const LoginScreen = ({ navigation }) => {
         <Text style={styles.header}>Login</Text>
         <Text style={styles.subHeader}>Sign in to continue.</Text>
         
-        <TextInput placeholder="Name" placeholderTextColor="#aaa" style={styles.input} />
+        <TextInput placeholder="Email" placeholderTextColor="#aaa" style={styles.input} />
         <TextInput placeholder="Password" placeholderTextColor="#aaa" secureTextEntry style={styles.input} />
         
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Signup')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
         
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: '#3c5470',
   },
   header: {
     fontSize: 28,

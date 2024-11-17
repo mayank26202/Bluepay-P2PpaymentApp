@@ -7,6 +7,8 @@ import SignupScreen from './screens/SignupScreen';
 import LoginScreen from './screens/LoginScreen';
 import WalletScreen from './screens/WalletScreen';
 import LandingPage from './screens/LandingPage';
+import ProfilePage from './screens/ProfilePage';
+import AddToWalletPage from './screens/AddToWallet';
 
 const Stack = createStackNavigator();
 
@@ -14,11 +16,13 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-    <Stack.Navigator initialRouteName="Landing">
+    <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Landing">
     <Stack.Screen name="Landing" component={LandingPage} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Wallet" component={WalletScreen} />
+      <Stack.Screen name='Profile' component={ProfilePage} />
+      <Stack.Screen name='AddToWallet' component={AddToWalletPage} />
     </Stack.Navigator>
   </NavigationContainer>
   );
