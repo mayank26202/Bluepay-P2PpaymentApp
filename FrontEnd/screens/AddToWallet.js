@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons'; // Make sure to install Ionicons
+import Ionicons from '@expo/vector-icons/Ionicons';
+import RazorpayCheckout from 'react-native-razorpay';
+import axios from 'axios';
 
 const AddToWalletPage = ({ navigation }) => {
   const [amount, setAmount] = useState('');
 
-  const handleAddMoney = () => {
+  const handleAddMoney = async () => {
     if (!amount || isNaN(amount)) {
       Alert.alert('Invalid Input', 'Please enter a valid amount.');
       return;
@@ -14,19 +16,80 @@ const AddToWalletPage = ({ navigation }) => {
       Alert.alert('Limit Exceeded', 'The maximum amount you can add is ₹10,000.');
       return;
     }
-    // Navigate to payment gateway (to be integrated later)
-    Alert.alert('Redirecting', `Adding ₹${amount} to your wallet.`);
-    navigation.navigate('PaymentGateway'); // Replace 'PaymentGateway' with the actual route
+
+    try {
+      // Step 1: Create an order on your backend
+      const orderResponse = await axios.post('http://localhost:8080/create-order', {
+        amount: parseInt(amount) * 100, // Amount in paise
+      });
+
+      if (!orderResponse.data.id) {
+        Alert.alert('Error', 'Unable to create order. Please try again.');
+        return;
+      }
+
+      // Step 2: Razorpay payment initiation
+      const options = {
+        description: 'Add Money to Wallet',
+        image: 'https://example.com/your_logo', // Replace with your logo URL
+        currency: 'INR',
+        key: 'rzp_test_ZsQ10yKgHqSgCi', // Use environment variable for your Razorpay key
+        amount: parseInt(amount) * 100, // Amount in paise
+        name: 'BluePay',
+        order_id: orderResponse.data.id, // Razorpay order ID from backend
+        prefill: {
+          email: 'user@example.com', // Replace with actual user data
+          contact: '9876543210',     // Replace with actual user data
+          name: 'User Name',         // Replace with actual user data
+        },
+        theme: { color: '#00bcd4' },
+      };
+
+
+    
+      
+
+      // Open Razorpay checkout
+      RazorpayCheckout.open(options)
+        .then(async (data) => {
+          const paymentData = {
+            razorpay_order_id: data.razorpay_order_id,
+            razorpay_payment_id: data.razorpay_payment_id,
+            razorpay_signature: data.razorpay_signature,
+            userId: '12345',
+            amount: parseInt(amount),
+          };
+
+          const verifyResponse = await axios.post('http://localhost:8080/verify', paymentData);
+
+          if (verifyResponse.data.success) {
+            Alert.alert(
+              'Success',
+              `₹${amount} added to your wallet! Current Balance: ₹${verifyResponse.data.balance}`
+            );
+          } else {
+            Alert.alert('Error', 'Payment verification failed. Please contact support.');
+          }
+        })
+        .catch((error) => {
+          console.error('Payment Failed:', error);
+          Alert.alert('Payment Failed', error.description || 'An error occurred during payment.');
+        });
+    } catch (err) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+      console.log(err);
+    }
   };
 
   return (
     <View style={styles.container}>
-        <TouchableOpacity
+      <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.navigate('Profile')}
       >
         <Ionicons name="arrow-back" size={24} color="#fff" />
       </TouchableOpacity>
+
       {/* Header */}
       <Text style={styles.headerText}>Add money to your Wallet</Text>
 
@@ -104,3 +167,5 @@ const styles = StyleSheet.create({
 });
 
 export default AddToWalletPage;
+
+
